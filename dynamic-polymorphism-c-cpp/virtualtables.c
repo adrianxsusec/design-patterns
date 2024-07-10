@@ -87,7 +87,6 @@ void construct_linear(Linear* linear, int lower_bound, int upper_bound, double a
 }
 
 // malloc methods for Square and Linear
-
 Square* createSquare(int lower, int upper) {
     Square* square = malloc(sizeof(Square));
     construct_square(square, lower, upper);
@@ -112,6 +111,10 @@ int main() {
     construct_linear(&stackLinear, 1, 10, 2, 3);
 
     uf_tabulate((Unary_Function*) heapLinear);
+
+    double valAt = 5;
+    printf("Square f() at %f = %f \n", valAt, heapSquare->base.UF_VTable->value_at(heapSquare, &valAt));
+    printf("Linear f() at %f = %f \n", valAt, heapLinear->base.UF_VTable->value_at(heapLinear, &valAt));
 
     return 0;
 }
