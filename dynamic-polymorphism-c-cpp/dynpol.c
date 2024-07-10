@@ -4,16 +4,16 @@
 typedef char const* (*PTRFUN)();
 
 char const* dogGreet(void) {
-  return "vau!";
+  return "woof!";
 }
 char const* dogMenu(void) {
-  return "kuhanu govedinu";
+  return "cooked beef";
 }
 char const* catGreet(void) {
-  return "mijau!";
+  return "meow!";
 }
 char const* catMenu(void) {
-  return "konzerviranu tunjevinu";
+  return "canned tuna";
 }
 
 PTRFUN dogFunctions[] = {
@@ -67,8 +67,8 @@ struct Animal* createCat(const char* name) {
 
 void testAnimals(void){
   struct Animal* p1=createDog("Hamlet");
-  struct Animal* p2=createCat("Ofelija");
-  struct Animal* p3=createDog("Polonije");
+  struct Animal* p2=createCat("Ophelia");
+  struct Animal* p3=createDog("Polonius");
 
   animalPrintGreeting(p1);
   animalPrintGreeting(p2);
@@ -93,7 +93,21 @@ void stackVsHeap() {
     free(heapDog);
 }
 
+void allocateMoreDogs(int n) {
+    struct Animal* dogs = malloc(n * sizeof(struct Animal));
+    
+    for (int i = 0; i < n; i++) {
+        char* dogName = malloc(20);
+        sprintf(dogName, "%s%d", "Dog", i);
+        constructDog(&dogs[i], dogName);
+    }
+
+    for (int i = 0; i < n; i++) {
+        animalPrintGreeting(&dogs[i]);
+    }
+}
+
 int main() {
-    stackVsHeap();
+    allocateMoreDogs(5);
     return 0;
 }
