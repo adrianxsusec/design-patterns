@@ -8,6 +8,8 @@ class Unary_Function {
   public:
     // constructor
     Unary_Function(int lb, int ub) : lower_bound(lb), upper_bound(ub) {};
+    // virtual destructor
+    virtual ~Unary_Function() {}
     // pure virtual function
     virtual double value_at(double x) = 0;
     // virtual function
