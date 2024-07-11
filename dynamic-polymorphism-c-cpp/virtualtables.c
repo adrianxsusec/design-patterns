@@ -99,6 +99,10 @@ Linear* createLinear(int lower, int upper, double a, double b) {
     return linear;
 }
 
+void print_function_value_at(char name[], Unary_Function* func, double at) {
+    printf("%s f() at %f = %f \n", name, at, func->UF_VTable->value_at(func, &at));
+}
+
 int main() {
     Square* heapSquare = createSquare(1, 10);
     Square stackSquare;
@@ -113,8 +117,9 @@ int main() {
     uf_tabulate((Unary_Function*) heapLinear);
 
     double valAt = 5;
-    printf("Square f() at %f = %f \n", valAt, heapSquare->base.UF_VTable->value_at(heapSquare, &valAt));
-    printf("Linear f() at %f = %f \n", valAt, heapLinear->base.UF_VTable->value_at(heapLinear, &valAt));
+    
+    print_function_value_at("Square", (Unary_Function*) heapSquare, valAt);
+    print_function_value_at("Linear", (Unary_Function*) heapLinear, valAt);
 
     return 0;
 }
