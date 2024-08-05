@@ -26,13 +26,13 @@ class Cell:
         [o.evaluate() for o in self.observers]
 
     def evaluate(self) -> None:
-        # calculate my value
+        self.determine_self_val()
+        self.update_observers()
+
+    def determine_self_val(self):
         refs: list[Cell] = self.sheet.get_refs(self)
         variables = {ref: self.sheet.cell(ref).value for ref in re.findall(self.sheet.pattern, self.exp)}
         self.value = self.eval_expression(self.exp, variables)
-
-        # trigger the update of all the observers
-        self.update_observers()
 
     def add_observer(self, cell) -> None:
         self.observers.append(cell)
