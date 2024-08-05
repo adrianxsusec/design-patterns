@@ -60,7 +60,7 @@ class Sheet:
     pattern = r'([A-Z]+[0-9]+)'
 
     def __init__(self, rows, cols):
-        self.cells: list[list[Cell | None]] = [[Cell(self) for _ in range(cols)] for _ in range(rows)]
+        self.cells: list[list[Cell]] = [[Cell(self) for _ in range(cols)] for _ in range(rows)]
 
     def print(self) -> None:
         [print(row) for row in self.cells]
@@ -70,18 +70,48 @@ class Sheet:
         # TODO validate content
         # TODO check circular dependency
         cell = self.cells[row][col]
-        if not cell:
-            self.cells[row][col] = Cell(self, content)
-        else:
-            cell.set(content)
+
+        self.check_circular_dependency(cell, content)
+
+        cell.set(content)
 
     def cell(self, ref) -> Cell:
         row, col = self.ref_to_address(ref)
         return self.cells[row][col]
 
     def get_refs(self, cell: Cell) -> list[Cell]:
-        refs = re.findall(self.pattern, cell.exp)
+        refs = self.exp_refs(cell.exp)
+        return self.refs_to_cell(refs)
+
+    def exp_refs(self, exp):
+        return re.findall(self.pattern, exp)
+
+    def refs_to_cell(self, refs: list):
         return [self.cell(ref) for ref in refs]
+
+    def check_circular_dependency(self, cell: Cell, exp: str):
+        def dfs(parent: Cell, deps: list[Cell]):
+            children = self.get_refs(parent)
+
+            circular_deps = [c for c in children if c in deps]
+
+            if parent in children or circular_deps:
+                raise RuntimeError("Circular dependency occurred - please check.")
+
+            for child in children:
+                new_deps = deps.copy()
+                new_deps.append(parent)
+                dfs(child, new_deps)
+
+        # initial cell
+        new_refs = self.exp_refs(exp)
+        ref_cells = self.refs_to_cell(new_refs)
+
+        if cell in ref_cells:
+            raise RuntimeError("Circular dependency - first cell points to itself.")
+
+        existing_dependencies = [cell]
+        [dfs(rc, existing_dependencies) for rc in ref_cells]
 
     @staticmethod
     def ref_to_address(ref: str) -> (int, int):
@@ -106,5 +136,12 @@ if __name__ == "__main__":
 
     s.set('A1', '4')
     s.set('A4', 'A1+A3')
+    s.print()
+    print()
+
+    try:
+        s.set('A1', 'A3')
+    except RuntimeError as e:
+        print("Caught exception:", e)
     s.print()
     print()
