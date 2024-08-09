@@ -30,7 +30,6 @@ class Cell:
         self.update_observers()
 
     def determine_self_val(self):
-        refs: list[Cell] = self.sheet.get_refs(self)
         variables = {ref: self.sheet.cell(ref).value for ref in re.findall(self.sheet.pattern, self.exp)}
         self.value = self.eval_expression(self.exp, variables)
 
@@ -68,7 +67,6 @@ class Sheet:
     def set(self, ref: str, content: str) -> None:
         row, col = self.ref_to_address(ref)
         # TODO validate content
-        # TODO check circular dependency
         cell = self.cells[row][col]
 
         self.check_circular_dependency(cell, content)
